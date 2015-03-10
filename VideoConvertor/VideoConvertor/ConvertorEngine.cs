@@ -39,13 +39,13 @@ namespace VideoConvertor
                     switch(FileFormat)
                     {
                         case Format.webm:
-                             ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
+                             //ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
                             break;
                         case Format.mp4:
-                            ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.mp4);
+                            ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
                             break;
                         case Format.mov:
-                            ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.mov);
+                            ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.mp4);
                             break;
                     }
                    
