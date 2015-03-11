@@ -14,7 +14,7 @@ namespace VideoConvertor
       
         public const string mov = "mov";
         
-        public const string mp4 = "mp4";
+        public const string mp4 = ".mp4";
     }
 
 

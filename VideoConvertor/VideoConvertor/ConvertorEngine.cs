@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NReco.VideoConverter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace VideoConvertor
 {
     public class ConvertorEngine
     {
-
+        NReco.VideoConverter.FFMpegConverter ffMpeg = null;
         public ConvertorEngine(string sFilePath, string sOutPutPath, string sfileFormat)
         {
             FilePath = sFilePath;
@@ -18,13 +19,20 @@ namespace VideoConvertor
         }
         public ConvertorEngine()
         {
+            ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+            ffMpeg.ConvertProgress += ffMpeg_ConvertProgress;
+        }
 
+        void ffMpeg_ConvertProgress(object sender, ConvertProgressEventArgs e)
+        {
+            
         }
 
         public string Convert()
         {
-           
+
             string smessage = string.Empty;
+           
 
             if (string.IsNullOrEmpty(FilePath) || string.IsNullOrEmpty(OutPutFilePath) || string.IsNullOrEmpty(FileFormat))
             {
@@ -34,12 +42,12 @@ namespace VideoConvertor
             {
                 try
                 {
-                   
-                    var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
-                    switch(FileFormat)
+
+                 
+                    switch (FileFormat)
                     {
                         case Format.webm:
-                             //ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
+                            //ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
                             break;
                         case Format.mp4:
                             ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
@@ -48,15 +56,25 @@ namespace VideoConvertor
                             ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.mp4);
                             break;
                     }
-                   
+
+                }
+                catch (FFMpegException e)
+                {
+                    ffMpeg.Abort();
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Unable to convert. "+ex.Message);
+                    ffMpeg.Abort();
+                    throw new Exception("Unable to convert. " + ex.Message);
                 }
-               
+
             }
             return smessage;
+        }
+
+        public void ReleaseData()
+        {
+            ffMpeg.Abort();
         }
 
         #region Properties
@@ -66,7 +84,7 @@ namespace VideoConvertor
 
         public string OutPutFilePath { get; set; }
 
-       
+
         #endregion
 
     }
