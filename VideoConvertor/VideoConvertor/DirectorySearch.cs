@@ -10,41 +10,57 @@ namespace VideoConvertor
     public class DirectorySearch
     {
         ConvertorEngine oEngine;
+        System.IO.DirectoryInfo oDr;
 
-        public DirectorySearch(string initialDirectory)
+        /// <summary>
+        /// Process each directory and files inside the directory.
+        /// </summary>
+        public void ProcessDirectories()
         {
-            InitialDirectory = initialDirectory;
-        }
 
-        public void ProcessDirectories(string initialDirectory)
-        {
             try
             {
-                System.IO.DirectoryInfo dr = new System.IO.DirectoryInfo(initialDirectory);
+                if (string.IsNullOrEmpty(InitialDirectory))
+                    throw new Exception("Initial directory field is not assigned.");
+
+                oDr = new System.IO.DirectoryInfo(InitialDirectory);
                 oEngine = new ConvertorEngine();
-                if (dr.Exists)
+                if (oDr.Exists)
                 {
-                    DirectoryInfo[] directories = dr.GetDirectories();
+                    DirectoryInfo[] directories = oDr.GetDirectories();
                     foreach (var item in directories)
                     {
                         FileInfo[] files = item.GetFiles();
                         if (files.Count() > 0)
-                        {
-
                             ConvertVideo(item);
-                        }
+
                     }
-                    oEngine.ReleaseData();
-                    oEngine = null;
+
+                    FileInfo[] filesInsideDirectory = oDr.GetFiles();
+                    if (filesInsideDirectory.Count() > 0)
+                    {
+                        ConvertVideo(oDr);
+                    }
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 throw ex;
             }
+            finally
+            {
+                if (oEngine != null)
+                    oEngine.ReleaseData();
+                oEngine = null;
+                oDr = null;
+            }
         }
 
+        /// <summary>
+        /// Convert the file to specified format.
+        /// </summary>
+        /// <param name="dr"></param>
         private void ConvertVideo(System.IO.DirectoryInfo dr)
         {
             foreach (var file in dr.GetFiles())
@@ -55,9 +71,8 @@ namespace VideoConvertor
                     case Format.mov:
                         oEngine.FileFormat = Format.mp4;
                         oEngine.FilePath = file.FullName;
-
                         fileName = Path.GetFileNameWithoutExtension(file.FullName);
-                        oEngine.OutPutFilePath = file.Directory.FullName + "\\sub.webm";
+                        oEngine.OutPutFilePath = Path.Combine(file.Directory.FullName, fileName) + "." + Format.mp4;
                         oEngine.Convert();
                         break;
                     case Format.mp4:
@@ -69,9 +84,11 @@ namespace VideoConvertor
                         break;
                 }
             }
-
         }
 
+        /// <summary>
+        /// Set the Initial directory.
+        /// </summary>
         public string InitialDirectory { get; set; }
     }
 }

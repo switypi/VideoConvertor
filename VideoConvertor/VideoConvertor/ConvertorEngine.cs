@@ -7,83 +7,77 @@ using System.Threading.Tasks;
 
 namespace VideoConvertor
 {
-    public class ConvertorEngine
+    /// <summary>
+    /// Convertor engine.
+    /// </summary>
+    internal class ConvertorEngine
     {
         NReco.VideoConverter.FFMpegConverter ffMpeg = null;
-        public ConvertorEngine(string sFilePath, string sOutPutPath, string sfileFormat)
-        {
-            FilePath = sFilePath;
-            FileFormat = sfileFormat;
-            OutPutFilePath = sOutPutPath;
 
-        }
-        public ConvertorEngine()
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        internal ConvertorEngine()
         {
             ffMpeg = new NReco.VideoConverter.FFMpegConverter();
-            ffMpeg.ConvertProgress += ffMpeg_ConvertProgress;
         }
 
-        void ffMpeg_ConvertProgress(object sender, ConvertProgressEventArgs e)
+        /// <summary>
+        /// Converts video file to specified format
+        /// </summary>
+        internal void Convert()
         {
-            
-        }
-
-        public string Convert()
-        {
-
-            string smessage = string.Empty;
-           
-
-            if (string.IsNullOrEmpty(FilePath) || string.IsNullOrEmpty(OutPutFilePath) || string.IsNullOrEmpty(FileFormat))
+            try
             {
-                smessage = "Input path,Output path and file format are maindatory.";
-            }
-            else
-            {
-                try
-                {
+                if (string.IsNullOrEmpty(FilePath) || string.IsNullOrEmpty(OutPutFilePath) || string.IsNullOrEmpty(FileFormat))
+                    throw new Exception("Input path,Output path and file format are maindatory.");
 
-                 
-                    switch (FileFormat)
-                    {
-                        case Format.webm:
-                            //ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
-                            break;
-                        case Format.mp4:
-                            ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
-                            break;
-                        case Format.mov:
-                            ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.mp4);
-                            break;
-                    }
-
-                }
-                catch (FFMpegException e)
+                switch (FileFormat)
                 {
-                    ffMpeg.Abort();
-                }
-                catch (Exception ex)
-                {
-                    ffMpeg.Abort();
-                    throw new Exception("Unable to convert. " + ex.Message);
+                    case Format.webm:
+                        ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
+                        break;
+                    case Format.mp4:
+                        ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.webm);
+                        break;
+                    case Format.mov:
+                        ffMpeg.ConvertMedia(FilePath, OutPutFilePath, Format.mp4);
+                        break;
                 }
 
             }
-            return smessage;
+            catch (FFMpegException exp)
+            {
+                throw exp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void ReleaseData()
+        /// <summary>
+        /// Release the ffmpeg process.
+        /// </summary>
+        internal void ReleaseData()
         {
             ffMpeg.Abort();
+            ffMpeg = null;
         }
 
         #region Properties
+        /// <summary>
+        /// Input file path
+        /// </summary>
         public string FilePath { get; set; }
-
+        /// <summary>
+        /// File format 
+        /// </summary>
         public string FileFormat { get; set; }
-
+        /// <summary>
+        /// Output file
+        /// </summary>
         public string OutPutFilePath { get; set; }
-
 
         #endregion
 
