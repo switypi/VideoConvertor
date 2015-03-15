@@ -13,6 +13,7 @@ namespace VideoConvertor
     internal class ConvertorEngine
     {
         NReco.VideoConverter.FFMpegConverter ffMpeg = null;
+        
 
         /// <summary>
         /// Constructor
@@ -79,6 +80,13 @@ namespace VideoConvertor
         /// </summary>
         public string OutPutFilePath { get; set; }
 
+        public FFMpegConverter FFmpegProcess
+        {
+            get
+            {
+                return ffMpeg;
+            }
+        }
         #endregion
 
     }

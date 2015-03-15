@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ConvertorEngine.cs" />
     <Compile Include="DirectorySearch.cs" />
+    <Compile Include="ProcessResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Format.cs" />
   </ItemGroup>
